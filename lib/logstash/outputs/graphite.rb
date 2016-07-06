@@ -124,7 +124,8 @@ class LogStash::Outputs::Graphite < LogStash::Outputs::Base
     else
       message = messages.join("\n")
       @logger.debug? && @logger.debug("Sending carbon messages", :messages => messages, :host => @host, :port => @port)
-
+      
+      connect
       # Catch exceptions like ECONNRESET and friends, reconnect on failure.
       # TODO(sissel): Test error cases. Catch exceptions. Find fortune and glory.
       begin
@@ -135,6 +136,7 @@ class LogStash::Outputs::Graphite < LogStash::Outputs::Base
         connect
         retry if @resend_on_failure
       end
+      @socket.close
     end
   end
 
